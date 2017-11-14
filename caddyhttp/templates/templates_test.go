@@ -158,4 +158,26 @@ func TestTemplates(t *testing.T) {
 	if respBody != expectedBody {
 		t.Fatalf("Test: the expected body %v is different from the response one: %v", expectedBody, respBody)
 	}
+
+	// Test extra sprig functions
+	req, err = http.NewRequest("GET", "/sprig.html", nil)
+	if err != nil {
+		t.Fatalf("Could not create HTTP request: %v", err)
+	}
+	req = req.WithContext(context.WithValue(req.Context(), httpserver.OriginalURLCtxKey, *req.URL))
+	rec = httptest.NewRecorder()
+
+	tmplroot.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("Test: Wrong response code: %d, should be %d", rec.Code, http.StatusOK)
+	}
+
+	respBody = rec.Body.String()
+	expectedBody = `<!DOCTYPE html><html><head><title>Sprig</title></head><body>foo HELLO!HELLO!HELLO!HELLO!HELLO!</body></html>
+`
+
+	if respBody != expectedBody {
+		t.Fatalf("Test: the expected body %v is different from the response one: %v", expectedBody, respBody)
+	}
 }

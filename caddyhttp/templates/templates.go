@@ -28,6 +28,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -84,6 +85,9 @@ func (t Templates) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 
 		// add custom functions
 		tpl.Funcs(httpserver.TemplateFuncs)
+
+		// add sprig functions
+		tpl.Funcs(sprig.TxtFuncMap()).ParseGlob("*.html")
 
 		// parse the template
 		parsedTpl, err := tpl.Parse(rb.Buffer.String())
